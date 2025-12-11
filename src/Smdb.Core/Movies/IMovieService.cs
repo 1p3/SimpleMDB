@@ -1,6 +1,7 @@
 namespace Smdb.Core.Movies;
 
 using Shared.Http;
+
 public interface IMovieService
 {
     public Task<Result<PagedResult<Movie>>> ReadMovies(int page, int size);
