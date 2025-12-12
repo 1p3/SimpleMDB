@@ -26,13 +26,6 @@ jobs:
       with:
         path: projects/SimpleMDB
 
-    - name: Checkout SharedLibrary
-      uses: actions/checkout@v4
-      with:
-        repository: ${{ github.repository_owner }}/SharedLibrary
-        token: ${{ secrets.SL_ACCESS_TOKEN }}
-        path: projects/SharedLibrary
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
