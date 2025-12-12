@@ -1,0 +1,71 @@
+name: CI-CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/smdb-api
+
+    steps:
+    - name: Prepare folder structure
+      run: mkdir -p projects
+
+    - name: Checkout SimpleMDB
+      uses: actions/checkout@v4
+      with:
+        path: projects/SimpleMDB
+
+    - name: Checkout SharedLibrary
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/SharedLibrary
+        token: ${{ secrets.SL_ACCESS_TOKEN }}
+        path: projects/SharedLibrary
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore
+      working-directory: projects/SimpleMDB
+      run: dotnet restore
+
+    - name: Build
+      working-directory: projects/SimpleMDB
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      working-directory: projects/SimpleMDB
+      run: dotnet test --configuration Release --no-build
+
+    - name: Publish
+      working-directory: projects/SimpleMDB
+      run: dotnet publish src/Smdb.Api/Smdb.Api.csproj -c Release -o publish
+
+    - name: Login to GHCR
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+    - name: Build and push image
+      working-directory: projects/SimpleMDB
+      run: |
+        docker build -t $IMAGE_NAME:latest .
+        docker push $IMAGE_NAME:latest
+
+    - name: Deploy to Azure
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: smdbycd   # ⚠️ usa el nombre EXACTO de tu Web App
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: ${{ env.IMAGE_NAME }}:latest
