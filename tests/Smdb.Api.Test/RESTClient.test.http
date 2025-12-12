@@ -1,0 +1,54 @@
+@baseUrl = http://localhost:8080/api/v1
+####################################################
+# READ MOVIES (paged)
+# GET /movies?page=1&size=10
+####################################################
+GET {{baseUrl}}/movies?page=1&size=10
+Accept: application/json
+
+
+####################################################
+# CREATE MOVIE
+# POST /movies
+####################################################
+POST {{baseUrl}}/movies
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": -1,
+  "title": "Inception",
+  "year": 2010,
+  "description": "A skilled thief who enters dreams to steal secrets."
+}
+
+
+####################################################
+# READ MOVIE BY ID
+# GET /movies/1
+####################################################
+GET {{baseUrl}}/movies/1
+Accept: application/json
+
+
+####################################################
+# UPDATE MOVIE
+# PUT /movies/1
+####################################################
+PUT {{baseUrl}}/movies/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Joker 2",
+  "year": 2020,
+  "description": "A man that is a joke."
+}
+
+
+####################################################
+# DELETE MOVIE
+# DELETE /movies/1
+####################################################
+DELETE {{baseUrl}}/movies/1
+Accept: application/json
