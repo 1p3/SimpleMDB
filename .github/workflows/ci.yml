@@ -43,18 +43,17 @@ jobs:
       working-directory: projects/SimpleMDB
       run: dotnet test --configuration Release --no-build
 
-    - name: Publish
-      working-directory: projects/SimpleMDB
-      run: dotnet publish src/Smdb.Api/Smdb.Api.csproj -c Release -o publish
-
     - name: Login to GHCR
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-    - name: Build and push image
+    - name: Build and push Docker image
       working-directory: projects/SimpleMDB
-      run: |
-        docker build -t $IMAGE_NAME:latest .
-        docker push $IMAGE_NAME:latest
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ${{ env.IMAGE_NAME }}:latest
 
     - name: Deploy to Azure
       uses: azure/webapps-deploy@v3
