@@ -26,8 +26,8 @@ public class App : HttpServer
         {
             res.StatusCode = 200;
             res.ContentType = "text/plain";
-            await using var writer = new StreamWriter(res.OutputStream);
-            await writer.WriteAsync("SimpleMDB API running in Azure");
+            var bytes = System.Text.Encoding.UTF8.GetBytes("SimpleMDB API running in Azure");
+            await res.OutputStream.WriteAsync(bytes, 0, bytes.Length);
         });
         router.UseRouter("/api/v1", apiRouter);
         apiRouter.UseRouter("/movies", movieRouter);
