@@ -22,6 +22,13 @@ public class App : HttpServer
         router.Use(HttpUtils.ParseRequestUrl);
         router.Use(HttpUtils.ParseRequestQueryString);
         router.UseParametrizedRouteMatching();
+        router.MapGet("/", async (req, res, next) =>
+        {
+            res.StatusCode = 200;
+            res.ContentType = "text/plain";
+            await using var writer = new StreamWriter(res.OutputStream);
+            await writer.WriteAsync("SimpleMDB API running in Azure");
+        });
         router.UseRouter("/api/v1", apiRouter);
         apiRouter.UseRouter("/movies", movieRouter);
     }
