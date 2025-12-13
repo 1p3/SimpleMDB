@@ -43,8 +43,12 @@ jobs:
       working-directory: projects/SimpleMDB
       run: dotnet test --configuration Release --no-build
 
-    - name: Login to GHCR
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: 1p3
+        password: ${{ secrets.SL_ACCESS_TOKEN }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
